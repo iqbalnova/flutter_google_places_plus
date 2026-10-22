@@ -16,41 +16,41 @@ enum Mappers {
     static func mapPlaceField(_ field: PlatformPlaceField) -> GMSPlaceProperty {
         switch field {
         case .id:
-            return GMSPlacePropertyPlaceID
+            return .placeID
         case .displayName:
-            return GMSPlacePropertyName
+            return .name
         case .formattedAddress:
-            return GMSPlacePropertyFormattedAddress
+            return .formattedAddress
         case .location:
-            return GMSPlacePropertyCoordinate
+            return .coordinate
         case .viewport:
-            return GMSPlacePropertyViewport
+            return .viewport
         case .addressComponents:
-            return GMSPlacePropertyAddressComponents
+            return .addressComponents
         case .types:
-            return GMSPlacePropertyTypes
+            return .types
         case .primaryType:
-            return GMSPlacePropertyTypes
+            return .types
         case .internationalPhoneNumber, .nationalPhoneNumber:
-            return GMSPlacePropertyPhoneNumber
+            return .phoneNumber
         case .rating:
-            return GMSPlacePropertyRating
+            return .rating
         case .userRatingCount:
-            return GMSPlacePropertyUserRatingsTotal
+            return .userRatingsTotal
         case .businessStatus:
-            return GMSPlacePropertyBusinessStatus
+            return .businessStatus
         case .priceLevel:
-            return GMSPlacePropertyPriceLevel
+            return .priceLevel
         case .websiteUri:
-            return GMSPlacePropertyWebsite
+            return .website
         case .googleMapsUri:
-            return GMSPlacePropertyGoogleMapsLinks
+            return .googleMapsLinks
         case .iconMaskUrl:
-            return GMSPlacePropertyIconImageURL
+            return .iconImageURL
         case .iconBackgroundColor:
-            return GMSPlacePropertyIconBackgroundColor
+            return .iconBackgroundColor
         case .utcOffsetMinutes:
-            return GMSPlacePropertyUTCOffsetMinutes
+            return .utcOffsetMinutes
         }
     }
 
@@ -107,7 +107,7 @@ enum Mappers {
 
     static func mapPlace(_ place: GMSPlace) -> PlatformPlace {
         let location = unmapLatLng(place.coordinate)
-        let viewport: PlatformLatLngBounds? = place.viewport.map { vp in
+        let viewport: PlatformLatLngBounds? = place.viewportInfo.map { vp in
             PlatformLatLngBounds(
                 southwest: unmapLatLng(vp.southWest),
                 northeast: unmapLatLng(vp.northEast)
