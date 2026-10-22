@@ -63,6 +63,25 @@ flutter pub get
 > The `^x.y.z` form only works for pub.dev-hosted packages, which is why it is
 > not used above.
 
+### Branch & release policy
+
+`main` is the **only** branch. Each track is an immutable tag, so the branch list stays clean and no consumer ever tracks a moving branch.
+
+| Track | Tag | Rebuild on |
+|---|---|---|
+| Modern | `v1.0.0`+ | `main` |
+| Legacy (iOS 15) | `v0.9.0` | `v0.9.0` tag |
+
+To ship a fix on the legacy track, branch off its tag, then retag and delete the branch again:
+
+```sh
+git checkout -b legacy/ios15 v0.9.0
+# ...edit, commit...
+git tag -a v0.9.1 -m "..."
+git push origin v0.9.1
+git branch -D legacy/ios15
+```
+
 ---
 
 ## Platform Setup & API Key Restrictions
