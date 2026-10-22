@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-10-22
+
+### Changed
+* **BREAKING (iOS)**: Bumped iOS minimum deployment target from iOS 15.0 to **iOS 16.0+**.
+  * Upgraded iOS Native SDK from `GooglePlaces` 9.4.1 to **`GooglePlacesSwift` 11.2.0** (via Swift Package Manager / CocoaPods).
+  * Migrated iOS native gateway to modern idiomatic Swift concurrency (`async/await`) and strong typing (`PlaceProperty`, `AutocompleteSuggestion`, `Place`).
+  * Re-enabled full support for `googleMapsUri` (`placeURL` and `directionsURL`) on iOS via `Place.googleMapsLinks`.
+* *(Note: If your project still requires iOS 15 support, please pin your dependency to tag `v1.0.0`)*.
+
+---
+
 ## [1.0.0] - 2026-10-22
 
 ### Added

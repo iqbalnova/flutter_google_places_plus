@@ -15,8 +15,8 @@ Modern Flutter plugin for Google Places SDK built from scratch on top of the lat
   s.source           = { :path => '.' }
   s.source_files = 'flutter_google_places_plus/Sources/flutter_google_places_plus/**/*'
   s.dependency 'Flutter'
-  s.dependency 'GooglePlaces', '~> 9.4'
-  s.platform = :ios, '15.0'
+  s.dependency 'GooglePlacesSwift', '~> 11.2'
+  s.platform = :ios, '16.0'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }

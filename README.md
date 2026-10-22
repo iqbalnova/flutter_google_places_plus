@@ -2,7 +2,7 @@
 
 Modern Flutter plugin for Google Places built directly on top of official **Native Google Places SDKs**:
 - **Android**: Official Places SDK for Android (Kotlin coroutines, native Places API New enabled).
-- **iOS**: Official Places SDK for iOS (Swift async/await, native `GooglePlaces` SDK v9.4.1 supporting **iOS 15.0+**).
+- **iOS**: Official Places Swift SDK (**`GooglePlacesSwift` 11.2.0** supporting **iOS 16.0+** with native `async/await`).
 - **Single Source of Truth**: Pigeon generates type-safe Dart, Kotlin, and Swift contracts (no legacy untyped method channels).
 
 ---
@@ -11,9 +11,11 @@ Modern Flutter plugin for Google Places built directly on top of official **Nati
 
 | Platform | Minimum Target | Native SDK Version | Tooling Required |
 |---|---|---|---|
-| **iOS** | **iOS 15.0+** | `GooglePlaces` **9.4.1** | Xcode 15.0+, Swift 5.0+ (SPM / CocoaPods) |
+| **iOS** | **iOS 16.0+** | `GooglePlacesSwift` **11.2.0** | Xcode 15.0+, Swift 5.9+ (SPM / CocoaPods) |
 | **Android** | **minSdk 24** (Android 7.0), `compileSdk` 36 | `places` **5.3.0** | Java 17, Kotlin 2.0+, AGP 8.0+ |
 | **Flutter** | Flutter **>= 3.3.0** | - | Dart **>= 3.13.4** |
+
+> **Need iOS 15 support?** Pin your dependency to tag [`v1.0.0`](https://github.com/iqbalnova/flutter_google_places_plus/tree/v1.0.0) which uses Google Places SDK 9.4.1.
 
 ---
 
@@ -26,7 +28,7 @@ dependencies:
   flutter_google_places_plus:
     git:
       url: https://github.com/iqbalnova/flutter_google_places_plus.git
-      ref: v1.0.0
+      ref: v2.0.0 # Or use v1.0.0 if you need iOS 15 support
 ```
 
 Then fetch dependencies:
@@ -121,6 +123,7 @@ final place = await places.fetchPlace(
     PlaceField.rating,
     PlaceField.userRatingCount,
     PlaceField.businessStatus,
+    PlaceField.googleMapsUri,
   },
   sessionToken: sessionToken, // Concludes the autocomplete billing session
 );
@@ -128,6 +131,7 @@ final place = await places.fetchPlace(
 print('Name: ${place.displayName}');
 print('Address: ${place.formattedAddress}');
 print('Coordinates: ${place.location?.latitude}, ${place.location?.longitude}');
+print('Google Maps Link: ${place.googleMapsUri}');
 ```
 
 ---
