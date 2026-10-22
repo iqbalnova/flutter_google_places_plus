@@ -141,7 +141,6 @@ enum Mappers {
         result.businessStatus = mapBusinessStatus(place.businessStatus)
         result.priceLevel = mapPriceLevel(place.priceLevel)
         result.websiteUri = place.website?.absoluteString
-        result.googleMapsUri = place.googleMapsLinks?.placeURL?.absoluteString
         result.iconMaskUrl = place.iconImageURL?.absoluteString
         result.iconBackgroundColor = colorHex
         result.utcOffsetMinutes = Int64(place.utcOffsetMinutes?.intValue ?? 0)
