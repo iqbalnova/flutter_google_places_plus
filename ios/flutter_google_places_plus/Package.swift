@@ -6,32 +6,21 @@ import PackageDescription
 let package = Package(
     name: "flutter_google_places_plus",
     platforms: [
-        .iOS("16.0")
+        .iOS("15.0")
     ],
     products: [
         .library(name: "flutter-google-places-plus", targets: ["flutter_google_places_plus"])
     ],
     dependencies: [
         .package(name: "FlutterFramework", path: "../FlutterFramework"),
-        .package(url: "https://github.com/googlemaps/ios-places-sdk", "11.2.0"..<"12.0.0")
+        .package(url: "https://github.com/googlemaps/ios-places-sdk", "9.4.1"..<"10.0.0")
     ],
     targets: [
         .target(
             name: "flutter_google_places_plus",
             dependencies: [
                 .product(name: "FlutterFramework", package: "FlutterFramework"),
-                .product(name: "GooglePlacesSwift", package: "ios-places-sdk")
-            ],
-            resources: [
-                // If your plugin requires a privacy manifest, for example if it uses any required
-                // reason APIs, update the PrivacyInfo.xcprivacy file to describe your plugin's
-                // privacy impact, and then uncomment these lines. For more information, see
-                // https://developer.apple.com/documentation/bundleresources/privacy_manifest_files
-                // .process("PrivacyInfo.xcprivacy"),
-
-                // If you have other resources that need to be bundled with your plugin, refer to
-                // the following instructions to add them:
-                // https://developer.apple.com/documentation/xcode/bundling-resources-with-a-swift-package
+                .product(name: "GooglePlaces", package: "ios-places-sdk")
             ]
         )
     ]

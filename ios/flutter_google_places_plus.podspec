@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'flutter_google_places_plus'
-  s.version          = '0.1.0'
+  s.version          = '0.9.0'
   s.summary          = 'Modern Flutter plugin for Google Places SDK using latest native Swift and Kotlin.'
   s.description      = <<-DESC
 Modern Flutter plugin for Google Places SDK built from scratch on top of the latest native Places SDK for Android (Kotlin) and Places SDK for iOS (Swift), supporting iOS Swift Package Manager (SPM).
@@ -15,8 +15,8 @@ Modern Flutter plugin for Google Places SDK built from scratch on top of the lat
   s.source           = { :path => '.' }
   s.source_files = 'flutter_google_places_plus/Sources/flutter_google_places_plus/**/*'
   s.dependency 'Flutter'
-  s.dependency 'GooglePlacesSwift'
-  s.platform = :ios, '16.0'
+  s.dependency 'GooglePlaces', '~> 9.4'
+  s.platform = :ios, '15.0'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }

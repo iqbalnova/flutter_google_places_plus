@@ -1,15 +1,17 @@
 import CoreLocation
 import Foundation
-import GooglePlacesSwift
+import GooglePlaces
 
 @MainActor
 final class RealPlacesGateway: PlacesGateway, @unchecked Sendable {
 
     private var initialized = false
+    private var sessionTokens: [String: GMSAutocompleteSessionToken] = [:]
+
     nonisolated init() {}
 
     func initialize(apiKey: String, locale: String?) throws {
-        _ = PlacesClient.provideAPIKey(apiKey)
+        _ = GMSPlacesClient.provideAPIKey(apiKey)
         self.initialized = true
     }
 
@@ -24,69 +26,57 @@ final class RealPlacesGateway: PlacesGateway, @unchecked Sendable {
             throw PigeonError(code: "NOT_INITIALIZED", message: "Places SDK is not initialized. Call initialize() first.", details: nil)
         }
 
-        let token: AutocompleteSessionToken?
+        let token: GMSAutocompleteSessionToken?
         if let tokenString = request.sessionToken {
             token = resolveSessionToken(tokenString)
         } else {
             token = nil
         }
 
-        var types: Set<PlaceType>? = nil
-        if let rawTypes = request.placeTypes, !rawTypes.isEmpty {
-            types = Set(rawTypes.map { PlaceType(rawValue: $0) })
+        let filter = GMSAutocompleteFilter()
+        if let countries = request.countries, !countries.isEmpty {
+            filter.countries = countries
+        }
+        if let types = request.placeTypes, !types.isEmpty {
+            filter.types = types
+        }
+        if let origin = request.origin {
+            filter.origin = CLLocation(latitude: origin.latitude, longitude: origin.longitude)
         }
 
-        var countries: Set<String>? = nil
-        if let rawCountries = request.countries, !rawCountries.isEmpty {
-            countries = Set(rawCountries)
-        }
-
-        let origin: CLLocation? = request.origin.map {
-            CLLocation(latitude: $0.latitude, longitude: $0.longitude)
-        }
-
-        var bias: (any CoordinateRegionBias)? = nil
         if let b = request.locationBias {
-            if let rect = b.rectangular, let region = Mappers.mapRectangularBounds(rect) {
-                bias = region
-            } else if let circ = b.circular {
-                bias = Mappers.mapCircularBounds(circ)
+            if let rect = b.rectangular {
+                filter.locationBias = GMSPlaceRectangularLocationOption(
+                    Mappers.mapLatLng(rect.northeast),
+                    Mappers.mapLatLng(rect.southwest)
+                )
             }
         }
 
-        var restriction: (any CoordinateRegionRestriction)? = nil
         if let r = request.locationRestriction {
-            if let rect = r.rectangular, let region = Mappers.mapRectangularBounds(rect) {
-                restriction = region
-            } else if let circ = r.circular {
-                restriction = Mappers.mapCircularBounds(circ)
+            if let rect = r.rectangular {
+                filter.locationRestriction = GMSPlaceRectangularLocationOption(
+                    Mappers.mapLatLng(rect.northeast),
+                    Mappers.mapLatLng(rect.southwest)
+                )
             }
         }
 
-        let filter = AutocompleteFilter(
-            types: types,
-            countries: countries,
-            origin: origin,
-            coordinateRegionBias: bias,
-            coordinateRegionRestriction: restriction,
-            regionCode: request.regionCode
-        )
+        let client = GMSPlacesClient.shared()
 
-        let inputOffset = request.inputOffset.map { Int($0) } ?? 0
-        let autocompleteRequest = AutocompleteRequest(
-            query: request.query,
-            sessionToken: token,
-            filter: filter,
-            inputOffset: inputOffset
-        )
-
-        let result = await PlacesClient.shared.fetchAutocompleteSuggestions(with: autocompleteRequest)
-
-        switch result {
-        case .success(let suggestions):
-            return suggestions.compactMap { Mappers.mapSuggestion($0) }
-        case .failure(let placesError):
-            throw placesError
+        return try await withCheckedThrowingContinuation { continuation in
+            client.findAutocompletePredictions(
+                fromQuery: request.query,
+                filter: filter,
+                sessionToken: token
+            ) { results, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    let mapped = (results ?? []).map { Mappers.mapPrediction($0) }
+                    continuation.resume(returning: mapped)
+                }
+            }
         }
     }
 
@@ -95,41 +85,44 @@ final class RealPlacesGateway: PlacesGateway, @unchecked Sendable {
             throw PigeonError(code: "NOT_INITIALIZED", message: "Places SDK is not initialized. Call initialize() first.", details: nil)
         }
 
-        let properties = request.fields.map { Mappers.mapPlaceProperty($0) }
+        let properties = request.fields.map { Mappers.mapPlaceField($0).rawValue }
         guard !properties.isEmpty else {
             throw PigeonError(code: "INVALID_ARGUMENT", message: "fields mask must not be empty.", details: nil)
         }
 
-        let token: AutocompleteSessionToken?
+        let token: GMSAutocompleteSessionToken?
         if let tokenString = request.sessionToken {
             token = resolveSessionToken(tokenString)
-            // Conclude session on fetchPlace
             sessionTokens.removeValue(forKey: tokenString)
         } else {
             token = nil
         }
 
-        let fetchRequest = FetchPlaceRequest(
+        let client = GMSPlacesClient.shared()
+        let fetchRequest = GMSFetchPlaceRequest(
             placeID: request.placeId,
             placeProperties: properties,
             sessionToken: token
         )
 
-        let result = await PlacesClient.shared.fetchPlace(with: fetchRequest)
-
-        switch result {
-        case .success(let place):
-            return Mappers.mapPlace(place)
-        case .failure(let placesError):
-            throw placesError
+        return try await withCheckedThrowingContinuation { continuation in
+            client.fetchPlace(with: fetchRequest) { place, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else if let place = place {
+                    continuation.resume(returning: Mappers.mapPlace(place))
+                } else {
+                    continuation.resume(throwing: PigeonError(code: "NOT_FOUND", message: "Place not found.", details: nil))
+                }
+            }
         }
     }
 
-    private func resolveSessionToken(_ tokenString: String) -> AutocompleteSessionToken {
+    private func resolveSessionToken(_ tokenString: String) -> GMSAutocompleteSessionToken {
         if let existing = sessionTokens[tokenString] {
             return existing
         }
-        let newToken = AutocompleteSessionToken()
+        let newToken = GMSAutocompleteSessionToken()
         sessionTokens[tokenString] = newToken
         return newToken
     }
