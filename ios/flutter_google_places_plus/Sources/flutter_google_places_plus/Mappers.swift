@@ -44,7 +44,7 @@ enum Mappers {
         case .websiteUri:
             return .website
         case .googleMapsUri:
-            return .googleMapsLinks
+            return GMSPlaceProperty(rawValue: "googleMapsLinks")
         case .iconMaskUrl:
             return .iconImageURL
         case .iconBackgroundColor:
@@ -141,6 +141,7 @@ enum Mappers {
         result.businessStatus = mapBusinessStatus(place.businessStatus)
         result.priceLevel = mapPriceLevel(place.priceLevel)
         result.websiteUri = place.website?.absoluteString
+        result.googleMapsUri = place.googleMapsLinks?.placeURL?.absoluteString
         result.iconMaskUrl = place.iconImageURL?.absoluteString
         result.iconBackgroundColor = colorHex
         result.utcOffsetMinutes = Int64(place.utcOffsetMinutes?.intValue ?? 0)
