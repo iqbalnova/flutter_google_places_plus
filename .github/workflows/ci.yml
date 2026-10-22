@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  analyze-and-test-dart:
+    name: Dart Analyze & Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Check code formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze Dart code
+        run: flutter analyze
+
+      - name: Run Dart unit tests
+        run: flutter test
+
+      - name: Verify pub publish dry-run
+        run: dart pub publish --dry-run
+
+  android-unit-tests:
+    name: Android Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: |
+          flutter pub get
+          cd example && flutter pub get
+
+      - name: Run Android unit tests
+        run: |
+          cd example/android
+          ./gradlew :flutter_google_places_plus:testDebugUnitTest
