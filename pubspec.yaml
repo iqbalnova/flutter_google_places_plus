@@ -1,11 +1,11 @@
 name: flutter_google_places_plus
 description: "Modern Flutter plugin for Google Places SDK (New) for Android (Kotlin) and iOS (Swift with SPM)."
-version: 0.1.0
-repository: https://github.com/gmedia/flutter_google_places_plus
+version: 1.0.0
+repository: https://github.com/iqbalnova/flutter_google_places_plus
 
 environment:
   sdk: ^3.13.4
-  flutter: '>=3.3.0'
+  flutter: '>=3.44.0'
 
 dependencies:
   flutter:

@@ -1,4 +1,4 @@
-## 0.1.0
+## 1.0.0
 
 * Initial release of `flutter_google_places_plus`.
 * Built from scratch on modern native Google Places SDKs:

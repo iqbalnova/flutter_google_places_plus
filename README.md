@@ -15,16 +15,53 @@ Modern Flutter plugin for Google Places built from scratch on top of the latest 
 | **Android** | `minSdk` 24 (Android 7.0), `compileSdk` 36 | Java 17, Kotlin 2.0+, AGP 8.0+ |
 | **Flutter** | Flutter 3.44+ | Dart 3.11+ |
 
+> Need iOS 15 support? Use the legacy track (`v0.9.0`) — see [Installation](#installation).
+
 ---
 
 ## Installation
 
-Add `flutter_google_places_plus` to your `pubspec.yaml`:
+This package is **not published on pub.dev yet**. Install it straight from GitHub and pin a tag:
+
+### Two tracks — pick one
+
+| Track | Git ref | iOS minimum | Google Places SDK used |
+|---|---|---|---|
+| **Modern** | `v1.0.0` | iOS **16.0**+ | iOS `11.2.0` (`GooglePlacesSwift`), Android `5.3.0` |
+| **Legacy** | `v0.9.0` | iOS **15.0**+ | iOS `9.4.1` (`GooglePlaces`), Android `5.3.0` |
+
+The Dart API is identical on both tracks: switching later is a one-line change in `pubspec.yaml`.
+
+### Modern (iOS 16+)
 
 ```yaml
 dependencies:
-  flutter_google_places_plus: ^0.1.0
+  flutter_google_places_plus:
+    git:
+      url: https://github.com/iqbalnova/flutter_google_places_plus.git
+      ref: v1.0.0
 ```
+
+### Legacy (iOS 15+)
+
+```yaml
+dependencies:
+  flutter_google_places_plus:
+    git:
+      url: https://github.com/iqbalnova/flutter_google_places_plus.git
+      ref: v0.9.0
+```
+
+After editing, run:
+
+```sh
+flutter pub get
+```
+
+> Once this package is published to pub.dev, the same dependency becomes
+> `flutter_google_places_plus: ^1.0.0` (modern) or `^0.9.0` (legacy).
+> The `^x.y.z` form only works for pub.dev-hosted packages, which is why it is
+> not used above.
 
 ---
 
